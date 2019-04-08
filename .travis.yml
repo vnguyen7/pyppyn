@@ -21,9 +21,7 @@ cache: pip
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
 install:
-  - pip install -r requirements/pip.txt
-  - pip install -r requirements/test.txt
-  - pip install --editable .
+  make lint
 script:
   - pytest
 jobs:
@@ -31,9 +29,7 @@ jobs:
     - stage: lint
       python: 3.6
       install:
-        - pip install -r requirements/pip.txt
-        - pip install -r requirements/lint.txt
-        - pip install --editable .
+        make lint
       script:
         - pylint pyppyn
         - pylint tests/*py
@@ -46,15 +42,9 @@ jobs:
       language: sh
       python: 3.7
       before_install:
-        - choco install python3
-        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-        - python -m pip install virtualenv
-        - virtualenv $HOME/venv
-        - source $HOME/venv/Scripts/activate
+        make before_install
       install:
-        - python -m pip install -r requirements/pip.txt
-        - python -m pip install -r requirements/test.txt
-        - pip install --editable .
+        make lint
     - stage: test
       os: osx
       osx_image: xcode10.1
@@ -62,9 +52,7 @@ jobs:
       python: 3.7
       # Perform the manual steps on osx to install python3 and activate venv
       before_install:
-        - python3 -m pip install virtualenv
-        - virtualenv $HOME/venv -p python3
-        - source $HOME/venv/bin/activate
+        make before_install
       cache:
         directories:
           - $HOME/Library/Caches/Homebrew
